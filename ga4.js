@@ -1,5 +1,110 @@
 window.dataLayer = window.dataLayer || [];
 
+
+// 產品列表事件 https://www.jabezfoundation.org/product-category/youth
+if (jQuery("meta[property='og:url']").attr("content").includes(`${window.location.hostname}/product-category/youth/`)){
+  let items = []  
+
+  jQuery(".products>.product-small").each(function(){
+    let item_id = jQuery(this).find("a.wishlist-toggle").data("product")
+    let item = {
+      'item_name': jQuery(this).find(".product-title.name a").text(),
+      'item_id': item_id,
+      'price': jQuery(this).find(".amount bdi").text(),
+      'item_brand': '雅比斯',
+      'item_category': jQuery(this).find(".category").text().replace(/(\r\n|\n|\r|\t)/gm, ""),
+      'item_variant': jQuery(this).find(".gc_custom_activity_date").text(),
+      'item_list_name': '青少專區',
+      'item_list_id': 'youth',
+      'quantity': '1',
+    } 
+    items.push(item);
+
+  });
+
+  window.dataLayer.push({ 'ecommerce': null }); // Clear the previous ecommerce object.
+  window.dataLayer.push({ 
+    'event': "view_item_list", 
+    'ecommerce': {
+      'items': items
+    } 
+  })
+
+  jQuery(".wishlist-toggle:not(.active)").click(function(){
+    if( jQuery(this).hasClass("active") ){
+
+    }else{
+      window.dataLayer.push({ 
+        'event': "add_to_wishlist", 
+        'ecommerce': {
+          'wish_item': items.find(obj => obj.item_id == jQuery(this).data("product"))
+        } 
+      })      
+    }
+  });
+
+}
+// 產品內頁事件 
+if (jQuery("meta[property='og:url']").attr("content").includes(`${window.location.hostname}/product/`)){
+
+  jQuery(".wishlist-toggle:not(.active)").click(function(){
+    if( jQuery(this).hasClass("active") ){
+
+    }else{
+      window.dataLayer.push({ 
+        'event': "add_to_wishlist", 
+        'ecommerce': {
+          'wish_item': {
+            'item_name': jQuery(".product-title.name a").text(),
+            'item_id': jQuery(this).data("product"),
+            'price': jQuery(".amount bdi:first").text(),
+            'item_brand': '雅比斯',
+            'item_category': jQuery(".category").text().replace(/(\r\n|\n|\r|\t)/gm, ""),
+            'item_variant': jQuery(".gc_custom_activity_date").text(),
+            'item_list_name': '青少專區',
+            'item_list_id': 'youth',
+            'quantity': '1',            
+          }
+        } 
+      })      
+    }
+  });
+
+}
+
+// 產品列表事件 https://www.jabezfoundation.org/shop/
+if (jQuery("meta[property='og:url']").attr("content").includes(`${window.location.hostname}/shop/`)){
+  let items = []  
+
+  jQuery(".products>.product-small").each(function(){
+    let item_id = jQuery(this).find("a.gc-add-to-cart-a").attr("href").replace("?add-to-cart=", "")
+    let item = {
+      'item_name': jQuery(this).find(".product-title.name a").text(),
+      'item_id': item_id,
+      'price': jQuery(this).find(".amount bdi").text(),
+      'item_brand': '雅比斯',
+      'item_category': jQuery(this).find(".category").text().replace(/(\r\n|\n|\r|\t)/gm, ""),
+      'item_variant': jQuery(this).find(".gc_custom_activity_date").text(),
+      'item_list_name': '首頁',
+      'item_list_id': '',
+      'quantity': '1',
+    } 
+    items.push(item);
+
+  });
+
+  window.dataLayer.push({ 'ecommerce': null }); // Clear the previous ecommerce object.
+  window.dataLayer.push({ 
+    'event': "view_item_list", 
+    'ecommerce': {
+      'items': items
+    } 
+  })
+}
+
+
+
+// 按鈕事件
 jQuery("a").click(function(){
   let buttonURL = jQuery(this).attr("href");
   let divName = jQuery(this).closest("div").attr("class");
@@ -12,6 +117,7 @@ jQuery("a").click(function(){
   });     
 })  
 
+// 按鈕事件
 jQuery("button").click(function(){
   let buttonURL = jQuery(this).attr("href");
   let divName = jQuery(this).closest("div").attr("class");
@@ -85,14 +191,14 @@ jQuery("#gform_7").submit(function(e){
 // 社會關懷[父母]
 jQuery("#gform_8").submit(function(e){
   let email = jQuery(this).find("input[name='input_11']").val();
-
+  let age = jQuery(this).find("input[name='input_18']").val();
   if(email != ""){
     window.dataLayer.push({
       'event': 'formSubmission',
       'formType': '社會關懷',
       'formTitle': '父母',
       'formURL': window.location.href,
-      'formAge': '',
+      'formAge': age,
       'formEmail': email,
       'formGender': '',
     });    
@@ -102,6 +208,8 @@ jQuery("#gform_8").submit(function(e){
 // 我要諮商
 jQuery("#gform_2").submit(function(e){
   let email = jQuery(this).find("input[name='input_11']").val();
+  let formGender = jQuery(this).find("input[name='input_2']:checked").val();
+  let formAge = jQuery(this).find("select[name='input_3']").val();
 
   if(email != ""){
     window.dataLayer.push({
@@ -109,9 +217,9 @@ jQuery("#gform_2").submit(function(e){
       'formType': '諮商',
       'formTitle': '我要諮商',
       'formURL': window.location.href,
-      'formAge': '',
+      'formAge': formAge,
       'formEmail': email,
-      'formGender': '',
+      'formGender': formGender,
     });    
   }
 });
@@ -134,7 +242,7 @@ jQuery("#gform_3").submit(function(e){
       'formAge': '',
       'formEmail': email,
       'formGender': '',
-      'questionCategory': category ,
+      'questionCategory': categories.join(",") ,
     });    
   }
 });
